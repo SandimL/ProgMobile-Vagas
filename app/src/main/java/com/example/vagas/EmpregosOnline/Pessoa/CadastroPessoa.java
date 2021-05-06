@@ -36,16 +36,14 @@ public class CadastroPessoa extends AppCompatActivity {
         empregosDatabase = EmpregosOnlineDatabase.getInstance(this);
         Intent it=getIntent();
         altPessoa = (Pessoa) it.getSerializableExtra("pessoa");
-        ArrayList<String> arrayEmpregos = (ArrayList<String>) it.getSerializableExtra("empregos");
-
         pessoa = new Pessoa();
         edtNome = findViewById(R.id.edtNome);
         edtCpf = findViewById(R.id.edtCpf);
         edtEmail = findViewById(R.id.edtEmail);
         edtTelefone = findViewById(R.id.edtTelefone);
         edtVagaId = (Spinner) findViewById(R.id.edtVagaId);
-
-        ArrayAdapter<String> adapter =  new ArrayAdapter<String> (this, android.R.layout.simple_spinner_dropdown_item, arrayEmpregos);
+        ArrayList<String> arrayIdVagas = (ArrayList<String>) it.getSerializableExtra("empregos");
+        ArrayAdapter<String> adapter =  new ArrayAdapter<String> (this, android.R.layout.simple_spinner_dropdown_item, arrayIdVagas);
         edtVagaId.setAdapter(adapter);
 
         btnVariavel = findViewById(R.id.btnVariavel);
@@ -84,7 +82,6 @@ public class CadastroPessoa extends AppCompatActivity {
                         alert("Cadastro realizado com sucesso!");
                     }
                 });
-
             }else{
                 AsyncTask.execute(() -> {
                     int retDb = empregosDatabase.IPessoaDao().update(pessoa);
@@ -93,7 +90,7 @@ public class CadastroPessoa extends AppCompatActivity {
                         alert("Erro ao editar!");
                     }
                     else{
-                        alert("Cadastro realizado com sucesso!");
+                        alert("Edição realizada com sucesso!");
                     }
                 });
             }

@@ -23,6 +23,7 @@ import com.example.vagas.R;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class PessoaActivity extends AppCompatActivity {
 
@@ -33,6 +34,7 @@ public class PessoaActivity extends AppCompatActivity {
     ArrayList<Pessoa> arrayListPessoa;
     ArrayAdapter<Pessoa> arrayAdapterPessoa;
     ArrayList<Emprego> arrayListEmprego;
+    ArrayList<String> arrayListVagasId = new ArrayList<String>();
     private int id1, id2; //menu item
 
     @Override
@@ -45,30 +47,36 @@ public class PessoaActivity extends AppCompatActivity {
         btnNovaPessoa = findViewById(R.id.btnNovaPessoa);
         btnNovaPessoa.setOnClickListener(v -> {
             Intent it = new Intent(PessoaActivity.this, CadastroPessoa.class);
-            buscarEmpregos();
-            Bundle bundle = new Bundle();
-            ArrayList<String> arrayListVagasId = new ArrayList<String>();
-            for (Emprego emprego: arrayListEmprego) {
-                arrayListVagasId.add(Integer.toString(emprego.vagaId));
-            }
-            bundle.putStringArrayList("empregos", arrayListVagasId);
-            it.putExtras(bundle);
-            startActivity(it);
+            AsyncTask.execute(() -> {
+                arrayListEmprego = (ArrayList<Emprego>) empregosDatabase.IEmpregoDao().getAll();
+                empregosDatabase.close();
+                arrayListVagasId.add("-1");
+                for (Emprego emprego: arrayListEmprego) {
+                    arrayListVagasId.add(Integer.toString(emprego.vagaId));
+                }
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList("empregos", arrayListVagasId);
+                it.putExtras(bundle);
+                startActivity(it);
+            });
         });
 
         listPessoa.setOnItemClickListener((adapterView, view, position, id) -> {
             Pessoa PessoaEnviada = (Pessoa) arrayAdapterPessoa.getItem(position);
             Intent it = new Intent(PessoaActivity.this, CadastroPessoa.class);
             it.putExtra("pessoa",  PessoaEnviada);
-            buscarEmpregos();
-            Bundle bundle = new Bundle();
-            ArrayList<String> arrayListVagasId = new ArrayList<String>();
-            for (Emprego emprego: arrayListEmprego) {
-                arrayListVagasId.add(Integer.toString(emprego.vagaId));
-            }
-            bundle.putStringArrayList("empregos", arrayListVagasId);
-            it.putExtras(bundle);
-            startActivity(it);
+            AsyncTask.execute(() -> {
+                arrayListEmprego = (ArrayList<Emprego>) empregosDatabase.IEmpregoDao().getAll();
+                empregosDatabase.close();
+                arrayListVagasId.add("-1");
+                for (Emprego emprego: arrayListEmprego) {
+                    arrayListVagasId.add(Integer.toString(emprego.vagaId));
+                }
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList("empregos", arrayListVagasId);
+                it.putExtras(bundle);
+                startActivity(it);
+            });
         });
 
         listPessoa.setOnItemLongClickListener((adapterView, view, position, id) -> {
@@ -89,13 +97,6 @@ public class PessoaActivity extends AppCompatActivity {
                     listPessoa.setAdapter(arrayAdapterPessoa);
                 });
             }
-        });
-    }
-
-    public void buscarEmpregos(){
-        AsyncTask.execute(() -> {
-            arrayListEmprego = (ArrayList<Emprego>) empregosDatabase.IEmpregoDao().getAll();
-            empregosDatabase.close();
         });
     }
 
