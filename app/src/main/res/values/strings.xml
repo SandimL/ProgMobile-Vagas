@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Vagas</string>
+    <string name="novo_emprego">Novo Emprego</string>
+    <string name="nova_pessoa">Nova Pessoa</string>
+</resources>
