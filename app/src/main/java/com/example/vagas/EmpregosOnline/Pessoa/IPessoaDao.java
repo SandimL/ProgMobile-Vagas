@@ -18,15 +18,9 @@ public interface IPessoaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Pessoa pessoa);
 
-    @Query("UPDATE pessoa " +
-        "SET nome = :nome, " +
-        "cpf = :cpf," +
-        "email = :email," +
-        "telefone = :telefone," +
-        "vagaId = :vagaId " +
-        "WHERE pessoaId = :pessoa_id")
-    long update(int pessoa_id, String nome, String cpf, String email, String telefone, String vagaId);
+    @Update
+    int update(Pessoa pessoa);
 
-    @Query("DELETE FROM pessoa WHERE pessoaId = :pessoa_id")
-    void delete(int pessoa_id);
+    @Delete
+    void delete(Pessoa pessoa);
 }

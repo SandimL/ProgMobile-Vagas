@@ -24,15 +24,10 @@ public class MainActivity extends AppCompatActivity {
         Button btnPessoa = (Button)findViewById(R.id.PessoaActivity);
         Button btnEmprego = (Button)findViewById(R.id.EmpregoActivity);
 
-        EmpregosOnlineDatabase db = Room.databaseBuilder(getApplicationContext(),
-                EmpregosOnlineDatabase.class, "EmpregosOnline").build();
-
         Intent pessoaIntent = new Intent(MainActivity.this, PessoaActivity.class);
-        pessoaIntent.putExtra("empregosOnlineDatabase", (Serializable) db);
         btnPessoa.setOnClickListener(v -> startActivity(pessoaIntent));
 
         Intent empregoIntent = new Intent(MainActivity.this, EmpregoActivity.class);
-        pessoaIntent.putExtra("empregosOnlineDatabase", (Serializable) db);
         btnEmprego.setOnClickListener(v -> startActivity(empregoIntent));
     }
 }

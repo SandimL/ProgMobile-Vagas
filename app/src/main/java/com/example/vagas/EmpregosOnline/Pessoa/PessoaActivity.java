@@ -3,6 +3,7 @@ package com.example.vagas.EmpregosOnline.Pessoa;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -14,12 +15,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.vagas.EmpregosOnline.Emprego.Emprego;
 import com.example.vagas.EmpregosOnline.EmpregosOnlineDatabase;
 import com.example.vagas.MainActivity;
 import com.example.vagas.R;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PessoaActivity extends AppCompatActivity {
 
@@ -29,25 +32,42 @@ public class PessoaActivity extends AppCompatActivity {
     EmpregosOnlineDatabase empregosDatabase;
     ArrayList<Pessoa> arrayListPessoa;
     ArrayAdapter<Pessoa> arrayAdapterPessoa;
+    ArrayList<Emprego> arrayListEmprego;
     private int id1, id2; //menu item
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_pessoa);
+        empregosDatabase = EmpregosOnlineDatabase.getInstance(this);
         listPessoa = findViewById(R.id.listPessoa);
         registerForContextMenu(listPessoa);
         btnNovaPessoa = findViewById(R.id.btnNovaPessoa);
-
         btnNovaPessoa.setOnClickListener(v -> {
             Intent it = new Intent(PessoaActivity.this, CadastroPessoa.class);
+            buscarEmpregos();
+            Bundle bundle = new Bundle();
+            ArrayList<String> arrayListVagasId = new ArrayList<String>();
+            for (Emprego emprego: arrayListEmprego) {
+                arrayListVagasId.add(Integer.toString(emprego.vagaId));
+            }
+            bundle.putStringArrayList("empregos", arrayListVagasId);
+            it.putExtras(bundle);
             startActivity(it);
         });
 
         listPessoa.setOnItemClickListener((adapterView, view, position, id) -> {
             Pessoa PessoaEnviada = (Pessoa) arrayAdapterPessoa.getItem(position);
             Intent it = new Intent(PessoaActivity.this, CadastroPessoa.class);
-            it.putExtra("pessoaId", (Serializable) PessoaEnviada);
+            it.putExtra("pessoa",  PessoaEnviada);
+            buscarEmpregos();
+            Bundle bundle = new Bundle();
+            ArrayList<String> arrayListVagasId = new ArrayList<String>();
+            for (Emprego emprego: arrayListEmprego) {
+                arrayListVagasId.add(Integer.toString(emprego.vagaId));
+            }
+            bundle.putStringArrayList("empregos", arrayListVagasId);
+            it.putExtras(bundle);
             startActivity(it);
         });
 
@@ -58,13 +78,25 @@ public class PessoaActivity extends AppCompatActivity {
     }
 
     public void preencheLista() {
-        arrayListPessoa = (ArrayList<Pessoa>) empregosDatabase.IPessoaDao().getAll();
-        empregosDatabase.close();
-        if (listPessoa != null) {
-            arrayAdapterPessoa = new ArrayAdapter<Pessoa>(PessoaActivity.this,
-                    android.R.layout.simple_list_item_1, arrayListPessoa);
-            listPessoa.setAdapter(arrayAdapterPessoa);
-        }
+        AsyncTask.execute(() -> {
+            arrayListPessoa = (ArrayList<Pessoa>) empregosDatabase.IPessoaDao().getAll();
+            empregosDatabase.close();
+
+            if (arrayListPessoa != null) {
+                runOnUiThread(()-> {
+                    arrayAdapterPessoa = new ArrayAdapter<Pessoa>(PessoaActivity.this,
+                            android.R.layout.simple_list_item_1, arrayListPessoa);
+                    listPessoa.setAdapter(arrayAdapterPessoa);
+                });
+            }
+        });
+    }
+
+    public void buscarEmpregos(){
+        AsyncTask.execute(() -> {
+            arrayListEmprego = (ArrayList<Emprego>) empregosDatabase.IEmpregoDao().getAll();
+            empregosDatabase.close();
+        });
     }
 
     @Override
@@ -73,15 +105,11 @@ public class PessoaActivity extends AppCompatActivity {
         MenuItem mSair = menu.add(Menu.NONE, id2, 2, "Cancela");
 
         mDelete.setOnMenuItemClickListener(menuItem -> {
-//            long retornoBD =
-            empregosDatabase.IPessoaDao().delete(pessoa.pessoaId);
-            empregosDatabase.close();
-//            if (retornoBD == -1) {
-//                alert("Erro de exclusão!");
-//            } else {
-//                alert("Registro excluído com sucesso!");
-//            }
-            preencheLista();
+            AsyncTask.execute(() -> {
+                empregosDatabase.IPessoaDao().delete(pessoa);
+                empregosDatabase.close();
+                preencheLista();
+            });
             return false;
         });
 

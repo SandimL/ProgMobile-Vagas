@@ -7,6 +7,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.example.vagas.EmpregosOnline.Pessoa.Pessoa;
+
 import java.util.List;
 
 @Dao
@@ -16,11 +18,11 @@ public interface IEmpregoDao {
     List<Emprego> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Emprego insert();
+    long insert(Emprego emprego);
 
     @Update
-    Emprego update();
+    int update(Emprego emprego);
 
     @Delete
-    Emprego delete();
+    void delete(Emprego emprego);
 }
