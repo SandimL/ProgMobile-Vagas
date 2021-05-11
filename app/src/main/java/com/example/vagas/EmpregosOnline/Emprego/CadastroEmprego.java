@@ -70,7 +70,6 @@ public class CadastroEmprego extends AppCompatActivity {
             }else{
                 AsyncTask.execute(() -> {
                     int retornoBD = empregosDatabase.IEmpregoDao().update(emprego);
-                    empregosDatabase.close();
 
                     if(retornoBD==-1){
                         runOnUiThread(()->alert("Erro ao editar!"));

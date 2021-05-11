@@ -62,7 +62,6 @@ public class EmpregoActivity extends AppCompatActivity {
     public void preencheLista() {
         AsyncTask.execute(() -> {
             arrayListEmprego = (ArrayList<Emprego>) empregosDatabase.IEmpregoDao().getAll();
-            empregosDatabase.close();
             if (arrayListEmprego != null) {
                 runOnUiThread(()-> {
                     arrayAdapterEmprego = new ArrayAdapter<Emprego>(EmpregoActivity.this,
@@ -82,7 +81,6 @@ public class EmpregoActivity extends AppCompatActivity {
         mDelete.setOnMenuItemClickListener(menuItem -> {
             AsyncTask.execute(() -> {
                 empregosDatabase.IEmpregoDao().delete(emprego);
-                empregosDatabase.close();
                 preencheLista();
             });
             return false;

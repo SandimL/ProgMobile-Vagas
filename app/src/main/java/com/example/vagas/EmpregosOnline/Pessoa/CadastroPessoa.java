@@ -85,7 +85,6 @@ public class CadastroPessoa extends AppCompatActivity {
             }else{
                 AsyncTask.execute(() -> {
                     int retDb = empregosDatabase.IPessoaDao().update(pessoa);
-                    empregosDatabase.close();
                     if(retornoBD==-1){
                         alert("Erro ao editar!");
                     }

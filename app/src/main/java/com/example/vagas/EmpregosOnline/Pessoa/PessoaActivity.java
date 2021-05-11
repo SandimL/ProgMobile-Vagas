@@ -49,7 +49,7 @@ public class PessoaActivity extends AppCompatActivity {
             Intent it = new Intent(PessoaActivity.this, CadastroPessoa.class);
             AsyncTask.execute(() -> {
                 arrayListEmprego = (ArrayList<Emprego>) empregosDatabase.IEmpregoDao().getAll();
-                empregosDatabase.close();
+                arrayListVagasId = new ArrayList<String>();
                 arrayListVagasId.add("-1");
                 for (Emprego emprego: arrayListEmprego) {
                     arrayListVagasId.add(Integer.toString(emprego.vagaId));
@@ -67,7 +67,7 @@ public class PessoaActivity extends AppCompatActivity {
             it.putExtra("pessoa",  PessoaEnviada);
             AsyncTask.execute(() -> {
                 arrayListEmprego = (ArrayList<Emprego>) empregosDatabase.IEmpregoDao().getAll();
-                empregosDatabase.close();
+                arrayListVagasId = new ArrayList<String>();
                 arrayListVagasId.add("-1");
                 for (Emprego emprego: arrayListEmprego) {
                     arrayListVagasId.add(Integer.toString(emprego.vagaId));
@@ -88,7 +88,6 @@ public class PessoaActivity extends AppCompatActivity {
     public void preencheLista() {
         AsyncTask.execute(() -> {
             arrayListPessoa = (ArrayList<Pessoa>) empregosDatabase.IPessoaDao().getAll();
-            empregosDatabase.close();
 
             if (arrayListPessoa != null) {
                 runOnUiThread(()-> {
@@ -108,7 +107,6 @@ public class PessoaActivity extends AppCompatActivity {
         mDelete.setOnMenuItemClickListener(menuItem -> {
             AsyncTask.execute(() -> {
                 empregosDatabase.IPessoaDao().delete(pessoa);
-                empregosDatabase.close();
                 preencheLista();
             });
             return false;
